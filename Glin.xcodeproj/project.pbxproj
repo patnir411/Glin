@@ -11,6 +11,12 @@
 		F88F2B112C4DA5A5008956A4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B102C4DA5A5008956A4 /* ContentView.swift */; };
 		F88F2B132C4DA5A7008956A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F88F2B122C4DA5A7008956A4 /* Assets.xcassets */; };
 		F88F2B162C4DA5A7008956A4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F88F2B152C4DA5A7008956A4 /* Preview Assets.xcassets */; };
+		F88F2B1D2C4DABFF008956A4 /* PDFProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B1C2C4DABFF008956A4 /* PDFProcessor.swift */; };
+		F88F2B1F2C4DAC21008956A4 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B1E2C4DAC21008956A4 /* DatabaseManager.swift */; };
+		F88F2B222C4DAC57008956A4 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = F88F2B212C4DAC57008956A4 /* SQLite */; };
+		F88F2B242C4DAFA6008956A4 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B232C4DAFA6008956A4 /* OpenAIService.swift */; };
+		F88F2B2F2C4E024E008956A4 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = F88F2B2E2C4E024E008956A4 /* MarkdownUI */; };
+		F88F2B312C4EBD6A008956A4 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B302C4EBD6A008956A4 /* APIKeys.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +25,10 @@
 		F88F2B102C4DA5A5008956A4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F88F2B122C4DA5A7008956A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F88F2B152C4DA5A7008956A4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F88F2B1C2C4DABFF008956A4 /* PDFProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFProcessor.swift; sourceTree = "<group>"; };
+		F88F2B1E2C4DAC21008956A4 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		F88F2B232C4DAFA6008956A4 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
+		F88F2B302C4EBD6A008956A4 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +36,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F88F2B222C4DAC57008956A4 /* SQLite in Frameworks */,
+				F88F2B2F2C4E024E008956A4 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,10 +63,13 @@
 		F88F2B0D2C4DA5A5008956A4 /* Glin */ = {
 			isa = PBXGroup;
 			children = (
+				F88F2B2C2C4DFE81008956A4 /* Managers */,
+				F88F2B2B2C4DFDF1008956A4 /* Services */,
 				F88F2B0E2C4DA5A5008956A4 /* GlinApp.swift */,
 				F88F2B102C4DA5A5008956A4 /* ContentView.swift */,
 				F88F2B122C4DA5A7008956A4 /* Assets.xcassets */,
 				F88F2B142C4DA5A7008956A4 /* Preview Content */,
+				F88F2B302C4EBD6A008956A4 /* APIKeys.swift */,
 			);
 			path = Glin;
 			sourceTree = "<group>";
@@ -65,6 +80,23 @@
 				F88F2B152C4DA5A7008956A4 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F88F2B2B2C4DFDF1008956A4 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F88F2B1C2C4DABFF008956A4 /* PDFProcessor.swift */,
+				F88F2B232C4DAFA6008956A4 /* OpenAIService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F88F2B2C2C4DFE81008956A4 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				F88F2B1E2C4DAC21008956A4 /* DatabaseManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,6 +115,10 @@
 			dependencies = (
 			);
 			name = Glin;
+			packageProductDependencies = (
+				F88F2B212C4DAC57008956A4 /* SQLite */,
+				F88F2B2E2C4E024E008956A4 /* MarkdownUI */,
+			);
 			productName = Glin;
 			productReference = F88F2B0B2C4DA5A5008956A4 /* Glin.app */;
 			productType = "com.apple.product-type.application";
@@ -111,6 +147,10 @@
 				Base,
 			);
 			mainGroup = F88F2B022C4DA5A5008956A4;
+			packageReferences = (
+				F88F2B202C4DAC57008956A4 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				F88F2B2D2C4E024E008956A4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+			);
 			productRefGroup = F88F2B0C2C4DA5A5008956A4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -137,6 +177,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F88F2B312C4EBD6A008956A4 /* APIKeys.swift in Sources */,
+				F88F2B1F2C4DAC21008956A4 /* DatabaseManager.swift in Sources */,
+				F88F2B1D2C4DABFF008956A4 /* PDFProcessor.swift in Sources */,
+				F88F2B242C4DAFA6008956A4 /* OpenAIService.swift in Sources */,
 				F88F2B112C4DA5A5008956A4 /* ContentView.swift in Sources */,
 				F88F2B0F2C4DA5A5008956A4 /* GlinApp.swift in Sources */,
 			);
@@ -272,6 +316,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Glin/Preview Content\"";
+				DEVELOPMENT_TEAM = YZZFT4QUYK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -300,6 +345,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Glin/Preview Content\"";
+				DEVELOPMENT_TEAM = YZZFT4QUYK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -342,6 +388,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F88F2B202C4DAC57008956A4 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
+		F88F2B2D2C4E024E008956A4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F88F2B212C4DAC57008956A4 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F88F2B202C4DAC57008956A4 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
+		};
+		F88F2B2E2C4E024E008956A4 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F88F2B2D2C4E024E008956A4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F88F2B032C4DA5A5008956A4 /* Project object */;
 }
