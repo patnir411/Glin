@@ -11,8 +11,6 @@ import Foundation
 class OpenAIService: ObservableObject {
     private let apiKey: String
     private var session: URLSession
-    
-    private let databaseManager = DatabaseManager.shared
 
     init(apiKey: String) {
         self.apiKey = apiKey
@@ -20,61 +18,118 @@ class OpenAIService: ObservableObject {
         self.session = URLSession(configuration: configuration)
     }
     
-    func sendMessage(_ content: String) async {
-        do { // TODO: set up for the elaborate functionality
-//            let userMessage = Message(role: .user, content: content)
-//            await MainActor.run {
-//                messages.append(userMessage)
-//            }
-//            
-//            let compiledContext = compileContext(from: searchTerms)
-//            let contextString = compiledContext.map { "Time: \($0.timestamp)\nUser: \($0.niralMessage)\nKRISHNA: \($0.krishnaResponse)" }.joined(separator: "\n")
-//            
-//            guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
-//                throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
-//            }
-//            
-//            var request = URLRequest(url: url)
-//            request.httpMethod = "POST"
-//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-//            
-//            let promptWithContext = """
-//            Relevant context snippets from previous conversations:
-//            \(contextString)
-//            
-//            
-//            Niral's current message:
-//            \(content)
-//            """
-//            
-//            var allMessages = [Prompts.systemPrompt] + messages
-//            allMessages[allMessages.count - 1] = Message(role: .user, content: promptWithContext)
-//            
-//            let parameters: [String: Any] = [
-//                "model": "gpt-4o",
-//                "messages": allMessages.map { $0.dictionary },
-//                "stream": true
-//            ]
-//
-//            request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
-//            
-//
-//            let (asyncBytes, _) = try await session.bytes(for: request)
-//            for try await line in asyncBytes.lines {
-//                await processStreamLine(line)
-//            }
-//            
-//
-//            await MainActor.run {
-//                if let lastMessage = self.messages.last {
-//                    DatabaseService.shared.saveMessage(niral: userMessage, krishna: lastMessage)
-//                }
-//            }
-
-        } catch {
-            print("Error sending message: \(error)")
+    func generateSearchTerms(from query: String) async throws -> [String] {
+        guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
+            throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
         }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        
+        let prompt = """
+        Given the following user query, generate a list of relevant search terms that would be effective for a full-text search. Return as a JSON object containing a list of strings
+
+        Choose the least possible amount of required search terms.
+
+        ### Example 1
+        User query: "Who is the main character in 'To Kill a Mockingbird'?"
+        Output: {"terms": ["main", "character", "To Kill a Mockingbird", "Harper Lee"]}
+
+        ### Example 2
+        User query: "Themes of love and betrayal in 'Wuthering Heights'"
+        Output: {"terms": ["themes", "love", "betrayal", "Wuthering Heights", "Emily Bronte"]}
+
+        ### Example 3
+        User query: "Setting of '1984' by George Orwell"
+        Output: {"terms": ["setting", "1984", "George Orwell", "dystopian", "London"]}
+
+        ### Example 4
+        User query: "Historical context of 'War and Peace'"
+        Output: {"terms": ["historical", "context", "War and Peace", "Leo Tolstoy", "Napoleonic Wars"]}
+
+        ### Example 5
+        User query: "Magic system in 'Harry Potter' series"
+        Output: {"terms": ["magic", "system", "Harry Potter", "J.K. Rowling", "Hogwarts"]}
+
+        User query: \(query)
+        """
+        
+        let messages = [
+            ["role": "system", "content": "You are an expert at generating relevant terms for searching about a book based on user queries and returning an object into JSON format."],
+            ["role": "user", "content": prompt]
+        ]
+        
+        let parameters: [String: Any] = [
+            "model": "gpt-3.5-turbo",
+            "messages": messages,
+            "response_format": ["type": "json_object"],
+            "max_tokens": 500
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+        
+        let (data, _) = try await session.data(for: request)
+        let response = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+        
+        guard let content = response.choices.first?.message.content,
+              let jsonData = content.data(using: .utf8) else {
+            throw NSError(domain: "InvalidResponse", code: 0, userInfo: nil)
+        }
+        
+        let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+        guard let jsonDictionary = jsonObject as? [String: Any],
+              let terms = jsonDictionary["terms"] as? [String] else {
+            throw NSError(domain: "InvalidJSONFormat", code: 0, userInfo: nil)
+        }
+        
+        return terms
+    }
+    
+    func generateElaboration(for chunk: String, question: String, relevantChunks: [(String, String)], bookTitle: String, userPreferences: String) async throws -> String {
+        guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
+            throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        
+        let prompt = """
+        The user is interested in \(userPreferences).
+        
+        Relevant context:
+        \(relevantChunks)
+        
+        Text chunk from \(bookTitle) to which user is asking question:
+        \(chunk)
+        
+        User question: \(question)
+        
+        
+        Provide a detailed answer to the user's question based on the given text chunk and relevant context.
+        """
+        
+        let messages = [
+            ["role": "system", "content": "You are an expert in answering questions about document content catered to a user's personal preferences. Take the relevant context and succinctly answer the users question."],
+            ["role": "user", "content": prompt]
+        ]
+        
+        let parameters: [String: Any] = [
+            "model": "gpt-4o",
+            "messages": messages,
+            "max_tokens": 750
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+        
+        print("OpenAIService: generating elaboration...")
+        let (data, _) = try await session.data(for: request)
+        let response = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+        
+        return response.choices.first?.message.content ?? "Failed to generate elaboration"
     }
     
     func generateBookInfo(from chunk: String) async throws -> (title: String, gist: String) {

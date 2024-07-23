@@ -24,7 +24,9 @@ struct ContentView: View {
                 } else if viewModel.books.isEmpty {
                     EmptyStateView(onUploadTapped: { viewModel.isShowingFilePicker = true })
                 } else if let content = viewModel.currentCardContent {
-                    CardView(content: content, onRetry: {viewModel.retryCardGeneration()})
+                    CardView(content: content, onRetry: {viewModel.retryCardGeneration()}, onElaborate: { question in
+                        viewModel.elaborateContent(question: question)
+                    })
                         .gesture(
                             DragGesture()
                                 .onEnded { value in
@@ -175,6 +177,43 @@ class ContentViewModel: ObservableObject {
         UserDefaults.standard.set(userPreferences, forKey: "userPreferences")
     }
     
+    func elaborateContent(question: String) {
+        Task {
+            do {
+                guard let chunk = databaseManager.getChunkContent(bookId: currentBookId, chunkNo: currentChunkNo),
+                      let book = databaseManager.getBook(bookId: currentBookId) else {
+                    print("Failed to retrieve chunk or book data")
+                    return
+                }
+                await MainActor.run {
+                    self.isLoading = true
+                }
+                
+                let terms = try await openAIService.generateSearchTerms(from: question)
+                let contextChunks = databaseManager.searchContent(searchTerms: terms, bookId: currentBookId)
+                
+                let elaboration = try await openAIService.generateElaboration(
+                    for: chunk,
+                    question: question,
+                    relevantChunks: contextChunks,
+                    bookTitle: book.title,
+                    userPreferences: userPreferences
+                )
+                
+                await MainActor.run {
+                    let updatedContent = (currentCardContent ?? "") + "\n\n**Q: " + question + "**\n\n" + elaboration
+                    currentCardContent = updatedContent
+                    databaseManager.updateChunkSummary(bookId: currentBookId, chunkNo: currentChunkNo, summary: updatedContent)
+                }
+            } catch {
+                print("Error elaborating content: \(error)")
+            }
+            await MainActor.run {
+                self.isLoading = false
+            }
+        }
+    }
+    
     func loadCard(for bookId: Int64, chunkNo: Int, forceRegenerate: Bool = false) {
         isLoading = true
         Task {
@@ -299,6 +338,10 @@ struct SettingsView: View {
 struct CardView: View {
     let content: String
     let onRetry: () -> Void
+    let onElaborate: (String) -> Void
+    
+    @State private var showingElaborateAlert = false
+    @State private var userQuestion = ""
     
     var body: some View {
         VStack {
@@ -312,12 +355,13 @@ struct CardView: View {
                     
             }
             VStack {
-//                Button("Elaborate") {
-//                }
-//                .padding(10)
-//                .background(Color.blue)
-//                .foregroundColor(.white)
-//                .cornerRadius(10)
+                Button("Elaborate") {
+                    showingElaborateAlert = true
+                }
+                .padding(10)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
                 Button(action: onRetry) {
                     Image(systemName: "arrow.clockwise.circle")
                         .resizable()
@@ -335,6 +379,14 @@ struct CardView: View {
         .cornerRadius(20)
         .shadow(radius: 10)
         .padding()
+        .alert("What's on your mind?", isPresented: $showingElaborateAlert) {
+            TextField("", text: $userQuestion)
+            Button("Submit") {
+                onElaborate(userQuestion)
+                userQuestion = ""
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
 }
 

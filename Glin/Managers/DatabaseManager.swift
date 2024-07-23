@@ -17,7 +17,7 @@ class DatabaseManager {
     private let bookTitle = Expression<String>("title")
     private let bookGist = Expression<String>("book_gist")
     private let totalChunks = Expression<Int>("total_chunks")
-    
+    private let contentsFTS = VirtualTable("contents_fts")
     private let contents = Table("contents")
     private let contentId = Expression<Int64>("id")
     private let contentBookId = Expression<Int64>("book_id")
@@ -32,6 +32,7 @@ class DatabaseManager {
             ).first!
             db = try Connection("\(path)/glin.sqlite3")
             createTables()
+            populateFTSTable()
         } catch {
             print("Unable to establish database connection: \(error)")
         }
@@ -56,8 +57,42 @@ class DatabaseManager {
                 t.column(chunkSummary)
                 t.foreignKey(contentBookId, references: books, bookId)
             })
+            try db.run("CREATE VIRTUAL TABLE IF NOT EXISTS contents_fts USING fts5(content_id, book_id, chunk_no, chunk_content)")
         } catch {
             print("Error creating tables: \(error)")
+        }
+    }
+    
+    func populateFTSTable() {
+        guard let db = db else { return }
+        
+        do {
+            // Check if the FTS table is empty
+            let count = try db.scalar("SELECT COUNT(*) FROM contents_fts") as! Int64
+            if count > 0 {
+                print("FTS table is already populated. Skipping...")
+                return
+            }
+            
+            // Begin a transaction for better performance
+            try db.transaction {
+                // Fetch all contents
+                let query = contents.select(contentId, contentBookId, chunkNo, chunkContent)
+                for row in try db.prepare(query) {
+                    let contentId = row[self.contentId]
+                    let bookId = row[self.contentBookId]
+                    let chunkNo = row[self.chunkNo]
+                    let content = row[self.chunkContent]
+                    
+                    // Insert into FTS table
+                    try db.run("INSERT INTO contents_fts (content_id, book_id, chunk_no, chunk_content) VALUES (?, ?, ?, ?)",
+                               contentId, bookId, chunkNo, content)
+                }
+            }
+            
+            print("Successfully populated FTS table")
+        } catch {
+            print("Error populating FTS table: \(error)")
         }
     }
     
@@ -77,6 +112,9 @@ class DatabaseManager {
                     chunkNo <- index,
                     chunkContent <- chunk
                 ))
+                
+                try db.run("INSERT INTO contents_fts (content_id, book_id, chunk_no, chunk_content) VALUES (?, ?, ?, ?)",
+                           contentId as! Binding, bookId, index, chunk)
             }
             
             return bookId
@@ -84,6 +122,69 @@ class DatabaseManager {
             print("Error saving book: \(error)")
             return nil
         }
+    }
+    
+    func searchContent(searchTerms: [String], bookId: Int64, limit: Int = 25) -> [(String, String)] {
+        guard let db = db else { return [] }
+        
+        do {
+            print("Searching book id \(bookId) with terms: \(searchTerms)")
+            var sqlQuery = """
+                SELECT book_id, chunk_no, chunk_content, rank
+                FROM contents_fts
+                WHERE contents_fts MATCH :search
+            """
+            let searchExpression = searchTerms.map { "\($0)*" }.joined(separator: " OR ")
+            var arguments: [String: Binding] = [":search": searchExpression]
+
+            sqlQuery += " AND book_id = :bookId"
+            arguments[":bookId"] = bookId
+
+            sqlQuery += " ORDER BY rank LIMIT :limit"
+            arguments[":limit"] = limit
+            
+            print("sqlQuery: \(sqlQuery)")
+            let statement = try db.prepare(sqlQuery)
+            statement.bind(arguments)
+
+            
+            let results = try statement.run()
+            var searchResults: [(String, String)] = []
+                    
+            for row in results {
+                let bookId = row[0] as! Int64
+                if let bookContext = getBookContext(bookId: bookId) {
+                    searchResults.append((
+                        bookContext,
+                        row[2] as! String
+                    ))
+                    if searchResults.count >= limit {
+                        break
+                    }
+                }
+            }
+            
+            print("Obtained search results: \(searchResults)")
+            print("A total of \(searchResults.count) results")
+            
+            return searchResults
+        } catch {
+            print("Error searching content: \(error)")
+        }
+        return []
+    }
+    
+    func getBookContext(bookId: Int64) -> String? {
+        guard let db = db else { return nil }
+        do {
+            let query = books.select(bookTitle, bookGist).filter(self.bookId == bookId)
+            if let book = try db.pluck(query) {
+                return book[bookTitle] + ":" + book[bookGist]
+            }
+        } catch {
+            print("Error fetching book context: \(error)")
+        }
+        return nil
     }
     
     func getChunkContent(bookId: Int64, chunkNo: Int) -> String? {
