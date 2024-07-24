@@ -67,6 +67,7 @@ class DatabaseManager {
         guard let db = db else { return }
         
         do {
+            
             // Check if the FTS table is empty
             let count = try db.scalar("SELECT COUNT(*) FROM contents_fts") as! Int64
             if count > 0 {
@@ -107,14 +108,14 @@ class DatabaseManager {
             ))
             
             for (index, chunk) in chunks.enumerated() {
-                try db.run(contents.insert(
+                let contentId = try db.run(contents.insert(
                     contentBookId <- bookId,
                     chunkNo <- index,
                     chunkContent <- chunk
                 ))
                 
                 try db.run("INSERT INTO contents_fts (content_id, book_id, chunk_no, chunk_content) VALUES (?, ?, ?, ?)",
-                           contentId as! Binding, bookId, index, chunk)
+                           contentId, bookId, index, chunk)
             }
             
             return bookId
@@ -134,7 +135,7 @@ class DatabaseManager {
                 FROM contents_fts
                 WHERE contents_fts MATCH :search
             """
-            let searchExpression = searchTerms.map { "\($0)*" }.joined(separator: " OR ")
+            let searchExpression = searchTerms.map { "\"\($0)*\"" }.joined(separator: " OR ")
             var arguments: [String: Binding] = [":search": searchExpression]
 
             sqlQuery += " AND book_id = :bookId"

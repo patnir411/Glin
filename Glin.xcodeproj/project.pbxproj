@@ -17,6 +17,11 @@
 		F88F2B242C4DAFA6008956A4 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B232C4DAFA6008956A4 /* OpenAIService.swift */; };
 		F88F2B2F2C4E024E008956A4 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = F88F2B2E2C4E024E008956A4 /* MarkdownUI */; };
 		F88F2B312C4EBD6A008956A4 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B302C4EBD6A008956A4 /* APIKeys.swift */; };
+		F88F2B342C5070AE008956A4 /* llama in Frameworks */ = {isa = PBXBuildFile; productRef = F88F2B332C5070AE008956A4 /* llama */; };
+		F88F2B382C509558008956A4 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B372C509558008956A4 /* HomeView.swift */; };
+		F88F2B3A2C5095BD008956A4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B392C5095BD008956A4 /* SettingsView.swift */; };
+		F88F2B3D2C50963E008956A4 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B3C2C50963E008956A4 /* ContentViewModel.swift */; };
+		F88F2B3F2C50965D008956A4 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B3E2C50965D008956A4 /* CardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +34,10 @@
 		F88F2B1E2C4DAC21008956A4 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		F88F2B232C4DAFA6008956A4 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		F88F2B302C4EBD6A008956A4 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		F88F2B372C509558008956A4 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		F88F2B392C5095BD008956A4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F88F2B3C2C50963E008956A4 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
+		F88F2B3E2C50965D008956A4 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F88F2B342C5070AE008956A4 /* llama in Frameworks */,
 				F88F2B222C4DAC57008956A4 /* SQLite in Frameworks */,
 				F88F2B2F2C4E024E008956A4 /* MarkdownUI in Frameworks */,
 			);
@@ -63,10 +73,12 @@
 		F88F2B0D2C4DA5A5008956A4 /* Glin */ = {
 			isa = PBXGroup;
 			children = (
+				F88F2B3B2C509623008956A4 /* ViewModels */,
+				F88F2B362C509526008956A4 /* Models */,
+				F88F2B352C50951B008956A4 /* Views */,
 				F88F2B2C2C4DFE81008956A4 /* Managers */,
 				F88F2B2B2C4DFDF1008956A4 /* Services */,
 				F88F2B0E2C4DA5A5008956A4 /* GlinApp.swift */,
-				F88F2B102C4DA5A5008956A4 /* ContentView.swift */,
 				F88F2B122C4DA5A7008956A4 /* Assets.xcassets */,
 				F88F2B142C4DA5A7008956A4 /* Preview Content */,
 				F88F2B302C4EBD6A008956A4 /* APIKeys.swift */,
@@ -99,6 +111,32 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		F88F2B352C50951B008956A4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F88F2B102C4DA5A5008956A4 /* ContentView.swift */,
+				F88F2B372C509558008956A4 /* HomeView.swift */,
+				F88F2B392C5095BD008956A4 /* SettingsView.swift */,
+				F88F2B3E2C50965D008956A4 /* CardView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F88F2B362C509526008956A4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F88F2B3B2C509623008956A4 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F88F2B3C2C50963E008956A4 /* ContentViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -118,6 +156,7 @@
 			packageProductDependencies = (
 				F88F2B212C4DAC57008956A4 /* SQLite */,
 				F88F2B2E2C4E024E008956A4 /* MarkdownUI */,
+				F88F2B332C5070AE008956A4 /* llama */,
 			);
 			productName = Glin;
 			productReference = F88F2B0B2C4DA5A5008956A4 /* Glin.app */;
@@ -150,6 +189,7 @@
 			packageReferences = (
 				F88F2B202C4DAC57008956A4 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 				F88F2B2D2C4E024E008956A4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+				F88F2B322C5070AD008956A4 /* XCRemoteSwiftPackageReference "llama.cpp" */,
 			);
 			productRefGroup = F88F2B0C2C4DA5A5008956A4 /* Products */;
 			projectDirPath = "";
@@ -178,8 +218,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F88F2B312C4EBD6A008956A4 /* APIKeys.swift in Sources */,
+				F88F2B3A2C5095BD008956A4 /* SettingsView.swift in Sources */,
+				F88F2B382C509558008956A4 /* HomeView.swift in Sources */,
 				F88F2B1F2C4DAC21008956A4 /* DatabaseManager.swift in Sources */,
+				F88F2B3F2C50965D008956A4 /* CardView.swift in Sources */,
 				F88F2B1D2C4DABFF008956A4 /* PDFProcessor.swift in Sources */,
+				F88F2B3D2C50963E008956A4 /* ContentViewModel.swift in Sources */,
 				F88F2B242C4DAFA6008956A4 /* OpenAIService.swift in Sources */,
 				F88F2B112C4DA5A5008956A4 /* ContentView.swift in Sources */,
 				F88F2B0F2C4DA5A5008956A4 /* GlinApp.swift in Sources */,
@@ -332,6 +376,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = patnir41.Glin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -361,6 +406,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = patnir41.Glin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -406,6 +452,14 @@
 				minimumVersion = 2.3.1;
 			};
 		};
+		F88F2B322C5070AD008956A4 /* XCRemoteSwiftPackageReference "llama.cpp" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/StanfordBDHG/llama.cpp.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -418,6 +472,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F88F2B2D2C4E024E008956A4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
+		};
+		F88F2B332C5070AE008956A4 /* llama */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F88F2B322C5070AD008956A4 /* XCRemoteSwiftPackageReference "llama.cpp" */;
+			productName = llama;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
