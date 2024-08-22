@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F8746FA32C5D6877008B4841 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8746FA22C5D6877008B4841 /* Models.swift */; };
+		F8746FA72C5D83BC008B4841 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8746FA62C5D83BC008B4841 /* ChatView.swift */; };
+		F8746FA92C5FF2F2008B4841 /* PDFViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8746FA82C5FF2F2008B4841 /* PDFViewerView.swift */; };
 		F88F2B0F2C4DA5A5008956A4 /* GlinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B0E2C4DA5A5008956A4 /* GlinApp.swift */; };
 		F88F2B112C4DA5A5008956A4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F2B102C4DA5A5008956A4 /* ContentView.swift */; };
 		F88F2B132C4DA5A7008956A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F88F2B122C4DA5A7008956A4 /* Assets.xcassets */; };
@@ -25,6 +28,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F8746FA22C5D6877008B4841 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		F8746FA62C5D83BC008B4841 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		F8746FA82C5FF2F2008B4841 /* PDFViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewerView.swift; sourceTree = "<group>"; };
 		F88F2B0B2C4DA5A5008956A4 /* Glin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Glin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F88F2B0E2C4DA5A5008956A4 /* GlinApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlinApp.swift; sourceTree = "<group>"; };
 		F88F2B102C4DA5A5008956A4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -118,6 +124,8 @@
 				F88F2B372C509558008956A4 /* HomeView.swift */,
 				F88F2B392C5095BD008956A4 /* SettingsView.swift */,
 				F88F2B3E2C50965D008956A4 /* CardView.swift */,
+				F8746FA62C5D83BC008B4841 /* ChatView.swift */,
+				F8746FA82C5FF2F2008B4841 /* PDFViewerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -125,6 +133,7 @@
 		F88F2B362C509526008956A4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F8746FA22C5D6877008B4841 /* Models.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -217,14 +226,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8746FA32C5D6877008B4841 /* Models.swift in Sources */,
 				F88F2B312C4EBD6A008956A4 /* APIKeys.swift in Sources */,
 				F88F2B3A2C5095BD008956A4 /* SettingsView.swift in Sources */,
 				F88F2B382C509558008956A4 /* HomeView.swift in Sources */,
 				F88F2B1F2C4DAC21008956A4 /* DatabaseManager.swift in Sources */,
+				F8746FA72C5D83BC008B4841 /* ChatView.swift in Sources */,
 				F88F2B3F2C50965D008956A4 /* CardView.swift in Sources */,
 				F88F2B1D2C4DABFF008956A4 /* PDFProcessor.swift in Sources */,
 				F88F2B3D2C50963E008956A4 /* ContentViewModel.swift in Sources */,
 				F88F2B242C4DAFA6008956A4 /* OpenAIService.swift in Sources */,
+				F8746FA92C5FF2F2008B4841 /* PDFViewerView.swift in Sources */,
 				F88F2B112C4DA5A5008956A4 /* ContentView.swift in Sources */,
 				F88F2B0F2C4DA5A5008956A4 /* GlinApp.swift in Sources */,
 			);

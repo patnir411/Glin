@@ -19,14 +19,27 @@ struct HomeView: View {
             } else {
                 List(viewModel.books, id: \.id) { book in
                     Button(action: {
+                        viewModel.currentPDFFilePath = book.pdfFilePath
                         viewModel.currentBookId = book.id
                     }) {
                         Text(book.title)
                     }
                 }
                 .navigationTitle("Uploaded Glinskys")
-            }
             
+                Button(action: {
+                    viewModel.currentBookId = nil
+                    viewModel.currentView = .chat
+                    }) {
+                        Text("Chat")
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    .padding()
+            }
+
             Button(action: { viewModel.isShowingFilePicker = true }) {
                 Text("Upload PDF")
                     .padding()

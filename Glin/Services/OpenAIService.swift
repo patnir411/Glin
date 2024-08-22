@@ -86,8 +86,8 @@ class OpenAIService: ObservableObject {
         
         return terms
     }
-    
-    func generateElaboration(for chunk: String, question: String, relevantChunks: [(String, String)], bookTitle: String, userPreferences: String) async throws -> String {
+
+    func generateResponse(for message: String, context: [(String, String)]? = []) async throws -> String {
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
             throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
         }
@@ -98,55 +98,45 @@ class OpenAIService: ObservableObject {
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
         let prompt = """
-        The user is interested in \(userPreferences).
+        Given the following context or none, answer the user's query as best and succinctly as possible. Communicate in the form of the context. Deduce your logic from the context if provided.
         
-        Relevant context:
-        \(relevantChunks)
+        Context: \(context)
         
-        Text chunk from \(bookTitle) to which user is asking question:
-        \(chunk)
-        
-        User question: \(question)
-        
-        
-        Provide a detailed answer to the user's question based on the given text chunk and relevant context.
+        Query: \(message)
         """
-        
-        let messages = [
-            ["role": "system", "content": "You are an expert in answering questions about document content catered to a user's personal preferences. Take the relevant context and succinctly answer the users question."],
-            ["role": "user", "content": prompt]
-        ]
         
         let parameters: [String: Any] = [
             "model": "gpt-4o",
-            "messages": messages,
-            "max_tokens": 750
+            "messages": [
+                ["role": "system", "content": "You are a friendly educational expert reading assistant."],
+                ["role": "user", "content": prompt]
+            ],
+            "max_tokens": 2048
         ]
         
         request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
         
-        print("OpenAIService: generating elaboration...")
         let (data, _) = try await session.data(for: request)
         let response = try JSONDecoder().decode(OpenAIResponse.self, from: data)
         
-        return response.choices.first?.message.content ?? "Failed to generate elaboration"
+        return response.choices.first?.message.content ?? "No response"
     }
-    
+
     func generateBookInfo(from chunk: String) async throws -> (title: String, gist: String) {
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
             throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
         }
-        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
+        let truncatedChunk = chunk.count > 4000 ? String(chunk.prefix(4000)) : chunk
         let prompt = """
         Given the following text chunk from a book, generate a suitable title for the book and a brief gist (summary) of its content. Return the result in JSON format with keys "title" and "gist".
 
         Text chunk:
-        \(chunk)
+        \(truncatedChunk)
         """
         
         let messages = [
@@ -177,7 +167,7 @@ class OpenAIService: ObservableObject {
         return (title: title, gist: gist)
     }
     
-    func generateCardSummary(for chunk: String, bookContext: String, userPreferences: String) async throws -> String {
+    func generateCardSummary(for chunk: String, bookContext: String, userPreferences: String, summarizerPrompt: String) async throws -> String {
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
             throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
         }
@@ -188,24 +178,24 @@ class OpenAIService: ObservableObject {
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
         let prompt = """
-        The following text chunk comes from \(bookContext).
+        Book context: \(bookContext).
         
-        The user is interested in \(userPreferences).
+        User background: \(userPreferences)
         
-        Summarize the following and provide a condensed summary of information that is short enough to fit on a swipable iPhone card:
-        
+        Text:
         \(chunk)
+        
         """
         
         let messages = [
-            ["role": "system", "content": "You are an expert summarizer and storyteller. For the provided text chunk take the user's preferences, the context of the overall book to which the chunk belongs, and turn it into a comprehensive information card, remaining accurate to the text but emphasizing relevant aspects based on user preferences. Simply go over content, do not mention the title or author again."],
+            ["role": "system", "content": summarizerPrompt],
             ["role": "user", "content": prompt]
         ]
         
         let parameters: [String: Any] = [
             "model": "gpt-4o",
             "messages": messages,
-            "max_tokens": 500
+            "max_tokens": 4096
         ]
         
         request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
@@ -213,48 +203,7 @@ class OpenAIService: ObservableObject {
         print("OpenAIService: generating card summary...")
         let (data, _) = try await session.data(for: request)
         let response = try JSONDecoder().decode(OpenAIResponse.self, from: data)
-        
+        print("OpenAIService: created following summary: \(response.choices.first?.message.content ?? "Failed to generate summary")")
         return response.choices.first?.message.content ?? "Failed to generate summary"
     }
-    
-    func elaborate() async { // TODO: implement
-        // Implement the elaborate functionality here
-        // This could involve generating a more detailed explanation or allowing for a chat-like interaction
-    }
-}
-
-struct Message: Codable, Identifiable {
-    var id: Int64? = nil
-    var role: Role
-    var content: String
-    var timestamp: String? = "x"
-    
-    var dictionary: [String: String] {
-        ["role": role.rawValue, "content": content]
-    }
-}
-
-//struct Context: Codable, Hashable {
-//    var niralMessage: String
-//    var krishnaResponse: String
-//    var timestamp: String
-//    var rank: Double?
-//    
-//    var dictionary: [String: String] {
-//        ["niralMessage": niralMessage, "krishnaResponse": krishnaResponse, "timestamp": timestamp]
-//    }
-//}
-
-enum Role: String, Codable {
-    case system
-    case user
-    case assistant
-}
-
-
-struct OpenAIResponse: Codable {
-    struct Choice: Codable {
-        let message: Message
-    }
-    let choices: [Choice]
 }
